@@ -23,3 +23,7 @@ pub fn get_keypair() -> Result<Keypair> {
 pub struct Storage {
     counter: u64,
 }
+
+#[event]
+#[derive(Debug)]
+pub struct Increment(u64);
