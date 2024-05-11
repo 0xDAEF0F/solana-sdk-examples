@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
 use anyhow::Result;
 use solana_client::nonblocking::rpc_client::RpcClient;
-use solana_sdk::address_lookup_table::program::ID;
 use solana_sdk::pubkey::Pubkey;
+use solana_sdk_examples::Storage;
 use std::str::FromStr;
 
 #[tokio::main]
@@ -23,10 +23,4 @@ async fn main() -> Result<()> {
     println!("the storage is {:#?}", storage);
 
     Ok(())
-}
-
-#[account]
-#[derive(Debug)]
-pub struct Storage {
-    counter: u64,
 }
