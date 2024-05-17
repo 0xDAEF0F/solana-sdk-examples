@@ -1,7 +1,9 @@
+#![allow(unused_imports)]
 use anyhow::Result;
 use solana_client::nonblocking::rpc_client::RpcClient;
 use solana_sdk::{
-    native_token::LAMPORTS_PER_SOL, signature::Keypair, signer::Signer, system_transaction,
+    native_token::LAMPORTS_PER_SOL, signature::Keypair, signer::Signer, system_instruction,
+    system_transaction, transaction::Transaction,
 };
 use solana_sdk_examples::get_keypair;
 
@@ -37,13 +39,25 @@ async fn main() -> Result<()> {
     let lamports = LAMPORTS_PER_SOL / 10;
     let recent_blockhash = rpc_client.get_latest_blockhash().await?;
 
-    // prepare txn
-    let tx = system_transaction::transfer(
-        &sender_keypair,
-        &recipient.pubkey(),
-        lamports,
+    // two instructions in one txn
+    let ix = system_instruction::transfer(&sender_pubkey, &recipient.pubkey(), lamports);
+    let ix2 = system_instruction::transfer(&recipient.pubkey(), &sender_pubkey, lamports);
+
+    let tx = Transaction::new_signed_with_payer(
+        &[ix, ix2],
+        Some(&sender_keypair.pubkey()),
+        &[&recipient, &sender_keypair], // they dont have to be in order
         recent_blockhash,
     );
+
+    // this is if you want to not do an instruction individually
+    // prepare txn
+    // let tx = system_transaction::transfer(
+    //     &sender_keypair,
+    //     &recipient.pubkey(),
+    //     lamports,
+    //     recent_blockhash,
+    // );
 
     // send txn
     let signature = rpc_client.send_and_confirm_transaction(&tx).await?;
