@@ -10,16 +10,21 @@ const STAN_SOL_ACCT_V4: &str = "FdaWCghYqyua2awm1bb2MLZCRUde3FLWkywb2Duz4vtg";
 async fn main() -> Result<()> {
     dotenv::dotenv()?;
 
-    let rpc_url = std::env::var("MAINNET_BETA_RPC_URL")?;
-    let rpc_client = RpcClient::new(rpc_url);
+    let mem = std::mem::size_of::<StateLayoutV4>();
 
-    let account_pubkey = Pubkey::from_str(STAN_SOL_ACCT_V4)?;
+    println!("size of StateLayoutV4: {}", mem);
+    // let rpc_url = std::env::var("MAINNET_BETA_RPC_URL")?;
+    // let rpc_client = RpcClient::new(rpc_url);
 
-    let acct_data: &[u8] = &rpc_client.get_account_data(&account_pubkey).await?;
+    // let account_pubkey = Pubkey::from_str(STAN_SOL_ACCT_V4)?;
 
-    let storage: StateLayoutV4 = bincode::deserialize(acct_data)?;
+    // let acct_data: &[u8] = &rpc_client.get_account_data(&account_pubkey).await?;
 
-    println!("{:#?}", storage);
+    // println!("account data: {:?}", acct_data.len());
+
+    // let storage: StateLayoutV4 = bincode::deserialize(acct_data)?;
+
+    // println!("{:#?}", storage);
 
     Ok(())
 }
@@ -63,7 +68,7 @@ struct StateLayoutV4 {
     swap_quote_out_amount: u128,
     swap_base_2_quote_fee: u64,
     swap_quote_in_amount: u128,
-    swap_base_out_amnount: u128,
+    swap_base_out_amount: u128,
     swap_quote_2_base_fee: u64,
     // amm vault
     base_vault: Pubkey,
@@ -82,5 +87,5 @@ struct StateLayoutV4 {
     owner: Pubkey,
     // true circulating supply without lock up
     lp_reserve: u64,
-    // PADDING: seq(u64(), 3, 'padding'),
+    padding: [u64; 3],
 }
